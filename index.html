@@ -322,10 +322,9 @@
 </div>
 
 <script>
-// Replace these with your Supabase project credentials (Settings > API)
 const SUPABASE_URL = 'https://srfhubczkyqgryphkpfb.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_WNpgnNEFi329sp-lnqRPdg_huw4yojT';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const TRACKS = ["Engineering", "Finance", "AI", "Trends", "Opportunities"];
 let ALL_ARTICLES = [];
@@ -444,7 +443,7 @@ function renderContent() {
 
 async function loadIssue() {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await db
       .from('articles')
       .select('*')
       .order('id', { ascending: false });
