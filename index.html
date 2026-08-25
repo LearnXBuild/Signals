@@ -51,48 +51,40 @@
 
     /* Masthead */
     .masthead {
-      padding: 1.75rem 0 1rem;
+      padding: 1.5rem 0 1rem;
     }
 
     .masthead-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    #issue-date {
       font-family: var(--font-mono);
-      font-size: 10px;
+      font-size: 11px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--ink-faint);
-      margin-bottom: 1.25rem;
-      gap: 8px;
     }
 
-    .masthead-meta-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
-
-    .mode-toggle-btn {
+    .mode-toggle-icon-btn {
       background: transparent;
       border: 1px solid var(--rule);
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 2px;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 4px;
       color: var(--ink);
       cursor: pointer;
-      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
       transition: all 0.15s ease;
     }
-    .mode-toggle-btn:hover {
+    .mode-toggle-icon-btn:hover {
       background: var(--ink);
-      color: var(--paper);
       border-color: var(--ink);
     }
 
@@ -161,7 +153,7 @@
     }
     .tab-btn:hover:not(.active) { color: var(--ink); }
 
-    /* Signal strength bars */
+    /* Signal strength meter */
     .signal-meter {
       display: inline-flex;
       align-items: flex-end;
@@ -246,7 +238,7 @@
       color: var(--signal);
     }
 
-    /* Clamped Summary with Read More */
+    /* Clamped Summary */
     .article-body-wrap {
       position: relative;
     }
@@ -351,7 +343,7 @@
     }
 
     /* ==========================================================================
-       BENTO CARDS MODE OVERRIDES
+       BENTO MODE OVERRIDES
        ========================================================================== */
     body.bento-mode {
       background: #f4f6f8;
@@ -362,7 +354,7 @@
       max-width: 840px;
       padding-top: 1.5rem;
     }
-    body.bento-mode .masthead-top {
+    body.bento-mode #issue-date {
       color: #64748b;
     }
     body.bento-mode h1.title {
@@ -438,12 +430,9 @@
       color: #475569;
       font-weight: 600;
     }
-    body.bento-mode .mode-toggle-btn {
+    body.bento-mode .mode-toggle-icon-btn {
       background: #ffffff;
       border-color: #cbd5e1;
-      border-radius: 99px;
-      color: #0f172a;
-      font-weight: 600;
     }
     body.bento-mode footer {
       border-top-color: #e2e8f0;
@@ -456,12 +445,8 @@
 <div class="wrap">
   <header class="masthead">
     <div class="masthead-top">
-      <div class="masthead-meta-left">
-        <span id="issue-date">TUESDAY, AUGUST 25, 2026</span>
-        <span>·</span>
-        <span>THE SIGNAL</span>
-      </div>
-      <button class="mode-toggle-btn" id="mode-btn" onclick="toggleViewMode()">💻 Bento View</button>
+      <span id="issue-date">—</span>
+      <button class="mode-toggle-icon-btn" id="mode-btn" onclick="toggleViewMode()" title="Toggle View Mode">💻</button>
     </div>
     <h1 class="title">The Signal</h1>
     <div class="tagline">Engineering, filtered. No noise, just what moved.</div>
@@ -482,7 +467,6 @@
 </div>
 
 <script>
-  /* SUPABASE CONFIGURATION */
   const SUPABASE_URL = 'https://srfhubczkyqgryphkpfb.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_WNpgnNEFi329sp-lnqRPdg_huw4yojT';
   const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -503,9 +487,9 @@
   }
 
   function formatDate(dateStr) {
-    if (!dateStr) return 'TUESDAY, AUGUST 25, 2026';
+    if (!dateStr) return '';
     const d = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
   }
 
   function signalMeter(score) {
@@ -521,10 +505,12 @@
     const btn = document.getElementById('mode-btn');
     if (isBentoMode) {
       document.body.classList.add('bento-mode');
-      btn.innerText = '📰 Reader View';
+      btn.innerText = '📰';
+      btn.title = 'Switch to Reader Mode';
     } else {
       document.body.classList.remove('bento-mode');
-      btn.innerText = '💻 Bento View';
+      btn.innerText = '💻';
+      btn.title = 'Switch to Bento Mode';
     }
   }
 
@@ -668,6 +654,8 @@
       if (ALL_ARTICLES.length > 0) {
         const latestDate = ALL_ARTICLES[0].date || new Date().toISOString().split('T')[0];
         document.getElementById('issue-date').textContent = formatDate(latestDate);
+      } else {
+        document.getElementById('issue-date').textContent = formatDate(new Date().toISOString().split('T')[0]);
       }
 
       renderTabs();
