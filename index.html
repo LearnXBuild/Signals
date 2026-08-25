@@ -1,315 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Signal — your engineering digest</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<!-- Supabase JS Client -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-  :root {
-    --paper: #E8E5D9;
-    --paper-raised: #F1EEE3;
-    --ink: #22261F;
-    --ink-soft: #52564C;
-    --ink-faint: #8B8C7F;
-    --rule: #B9B6A5;
-    --rule-strong: #22261F;
-    --signal: #B8842E;
-    --signal-dim: #D9C7A0;
-    --teal: #2F4F49;
-    --teal-bg: #DDE3DE;
-    --opp: #6B4A9A;
-    --opp-bg: #E5DEEE;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Signal — Engineering, Filtered</title>
+  <meta name="theme-color" content="#E8E5D9">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    /* ==========================================================================
+       EDITORIAL NEWSPAPER THEME (DEFAULT)
+       ========================================================================== */
+    :root {
+      --paper: #E8E5D9;
+      --paper-raised: #F1EEE3;
+      --ink: #22261F;
+      --ink-soft: #52564C;
+      --ink-faint: #8B8C7F;
+      --rule: #B9B6A5;
+      --rule-strong: #22261F;
+      --signal: #B8842E;
+      --signal-dim: #D9C7A0;
+      --teal: #2F4F49;
+      --teal-bg: #DDE3DE;
+      --opp: #6B4A9A;
+      --opp-bg: #E5DEEE;
+      --font-serif-head: 'Fraunces', Georgia, serif;
+      --font-serif-body: 'Source Serif 4', Georgia, serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+    }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  body {
-    background: var(--paper);
-    color: var(--ink);
-    font-family: 'Source Serif 4', serif;
-    line-height: 1.6;
-    padding: 0 0 6rem;
-  }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: var(--font-serif-body);
+      line-height: 1.68;
+      padding: 0 0 6rem;
+      min-height: 100vh;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
 
-  .wrap { max-width: 760px; margin: 0 auto; padding: 0 1.5rem; }
+    .wrap {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
 
-  /* ===== Masthead ===== */
-  .masthead { padding: 2.5rem 0 1.25rem; }
+    /* Masthead */
+    .masthead {
+      padding: 2.25rem 0 1rem;
+    }
 
-  .masthead-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin-bottom: 1rem;
-  }
+    .masthead-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 1.25rem;
+    }
 
-  h1.title {
-    font-family: 'Fraunces', serif;
-    font-size: clamp(2.6rem, 8vw, 4.2rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    text-align: center;
-    line-height: 0.95;
-  }
+    .mode-toggle-btn {
+      background: transparent;
+      border: 1px solid var(--rule);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 2px;
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .mode-toggle-btn:hover {
+      background: var(--ink);
+      color: var(--paper);
+      border-color: var(--ink);
+    }
 
-  .tagline {
-    text-align: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    margin-top: 0.6rem;
-  }
+    h1.title {
+      font-family: var(--font-serif-head);
+      font-size: clamp(2.8rem, 8vw, 4.4rem);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      text-align: center;
+      line-height: 0.95;
+      color: var(--ink);
+    }
 
-  .rule-thick { border: none; border-top: 3px solid var(--rule-strong); margin: 1.5rem 0 0; }
+    .tagline {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-top: 0.75rem;
+    }
 
-  /* ===== Track tabs ===== */
-  .tabs {
-    display: flex;
-    gap: 0;
-    border-bottom: 1px solid var(--rule-strong);
-    margin-bottom: 1.75rem;
-    overflow-x: auto;
-  }
-  .tab {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    background: none;
-    border: none;
-    padding: 0.9rem 1rem 0.7rem;
-    cursor: pointer;
-    white-space: nowrap;
-    border-bottom: 2px solid transparent;
-    margin-bottom: -1px;
-  }
-  .tab .count {
-    color: var(--ink-faint);
-    margin-left: 4px;
-  }
-  .tab.active {
-    color: var(--ink);
-    font-weight: 600;
-    border-bottom: 2px solid var(--signal);
-  }
-  .tab:hover:not(.active) { color: var(--ink); }
+    .rule-thick {
+      border: none;
+      border-top: 3px solid var(--rule-strong);
+      margin: 1.5rem 0 0;
+    }
 
-  /* ===== Signal meter ===== */
-  .signal-meter {
-    display: inline-flex;
-    align-items: flex-end;
-    gap: 2px;
-    height: 12px;
-    vertical-align: middle;
-  }
-  .signal-meter .bar {
-    width: 3px;
-    background: var(--rule);
-    border-radius: 1px;
-  }
-  .signal-meter .bar:nth-child(1) { height: 4px; }
-  .signal-meter .bar:nth-child(2) { height: 6px; }
-  .signal-meter .bar:nth-child(3) { height: 8px; }
-  .signal-meter .bar:nth-child(4) { height: 10px; }
-  .signal-meter .bar:nth-child(5) { height: 12px; }
-  .signal-meter .bar.on { background: var(--signal); }
+    /* Track Tabs */
+    .tabs-bar {
+      display: flex;
+      border-bottom: 1px solid var(--rule-strong);
+      margin-bottom: 1.75rem;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tabs-bar::-webkit-scrollbar { display: none; }
 
-  .byline {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.03em;
-    color: var(--ink-soft);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-  .byline .dot { color: var(--rule); }
+    .tab-btn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      background: none;
+      border: none;
+      padding: 0.9rem 1rem 0.7rem;
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      flex-shrink: 0;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+    .tab-btn .count {
+      color: var(--ink-faint);
+      margin-left: 4px;
+      font-size: 10px;
+    }
+    .tab-btn.active {
+      color: var(--ink);
+      font-weight: 700;
+      border-bottom: 2px solid var(--signal);
+    }
+    .tab-btn:hover:not(.active) { color: var(--ink); }
 
-  /* ===== Section labels ===== */
-  .section-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--ink-faint);
-    margin: 0 0 1rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .section-label::after {
-    content: '';
-    flex: 1;
-    border-top: 1px solid var(--rule);
-  }
+    /* Signal strength bars */
+    .signal-meter {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 12px;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    .signal-meter .bar {
+      width: 3px;
+      background: var(--rule);
+      border-radius: 1px;
+    }
+    .signal-meter .bar:nth-child(1) { height: 4px; }
+    .signal-meter .bar:nth-child(2) { height: 6px; }
+    .signal-meter .bar:nth-child(3) { height: 8px; }
+    .signal-meter .bar:nth-child(4) { height: 10px; }
+    .signal-meter .bar:nth-child(5) { height: 12px; }
+    .signal-meter .bar.on { background: var(--signal); }
 
-  .lead-image {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    border-radius: 2px;
-    margin-bottom: 1rem;
-    border: 1px solid var(--rule);
-  }
+    /* Editorial Meta Line */
+    .editorial-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      color: var(--ink-soft);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 0.5rem;
+    }
+    .editorial-meta .dot { color: var(--rule); }
 
-  .digest-item-inner {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-  .digest-thumb {
-    width: 96px;
-    height: 96px;
-    object-fit: cover;
-    border-radius: 2px;
-    border: 1px solid var(--rule);
-    flex-shrink: 0;
-  }
-  .digest-body { flex: 1; min-width: 0; }
+    .mark-read-text-btn {
+      background: none;
+      border: none;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      cursor: pointer;
+      padding: 0;
+      margin-left: auto;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .mark-read-text-btn:hover { color: var(--ink); }
 
-  @media (max-width: 480px) {
-    .digest-thumb { width: 72px; height: 72px; }
-  }
+    /* Section divider line */
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin: 0 0 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      border-top: 1px solid var(--rule);
+    }
 
-  /* ===== Lead story ===== */
-  .lead { margin-bottom: 2.25rem; }
-  .lead h2 {
-    font-family: 'Fraunces', serif;
-    font-size: clamp(1.7rem, 5vw, 2.35rem);
-    font-weight: 600;
-    line-height: 1.08;
-    letter-spacing: -0.01em;
-    margin: 0.6rem 0 0.7rem;
-  }
-  .lead .body-text {
-    font-size: 1.08rem;
-    line-height: 1.68;
-    color: var(--ink);
-  }
+    /* Editorial Article Item */
+    .article-item {
+      padding: 1.5rem 0;
+      border-top: 1px solid var(--rule);
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .article-item:first-of-type {
+      border-top: none;
+      padding-top: 0.5rem;
+    }
 
-  /* ===== Digest items ===== */
-  .digest-item {
-    padding: 1.4rem 0;
-    border-top: 1px solid var(--rule);
-  }
-  .digest-item h3 {
-    font-family: 'Fraunces', serif;
-    font-size: 1.28rem;
-    font-weight: 600;
-    line-height: 1.2;
-    margin: 0.5rem 0 0.55rem;
-  }
-  .digest-item .body-text {
-    font-size: 0.98rem;
-    color: var(--ink);
-  }
+    .article-headline {
+      font-family: var(--font-serif-head);
+      font-size: clamp(1.4rem, 4.5vw, 1.85rem);
+      font-weight: 600;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .article-headline:hover {
+      color: var(--signal);
+    }
 
-  .go-deeper {
-    margin-top: 0.85rem;
-    padding: 0.7rem 0.9rem;
-    background: var(--teal-bg);
-    border-left: 3px solid var(--teal);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: var(--teal);
-    line-height: 1.5;
-  }
+    .article-body-wrap {
+      position: relative;
+    }
+    .article-body {
+      font-size: 1.02rem;
+      line-height: 1.7;
+      color: var(--ink);
+    }
 
-  .opportunity-tag {
-    display: inline-block;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--opp);
-    background: var(--opp-bg);
-    padding: 3px 8px;
-    border-radius: 2px;
-    margin-bottom: 0.6rem;
-  }
+    .go-deeper-box {
+      margin-top: 0.4rem;
+      padding: 0.75rem 1rem;
+      background: var(--teal-bg);
+      border-left: 3px solid var(--teal);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--teal);
+      line-height: 1.55;
+    }
 
-  .tags { margin-top: 0.7rem; display: flex; gap: 6px; flex-wrap: wrap; }
-  .tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    background: var(--paper-raised);
-    border: 1px solid var(--rule);
-    padding: 3px 8px;
-    border-radius: 2px;
-  }
+    .tags-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 0.2rem;
+    }
+    .editorial-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      background: var(--paper-raised);
+      border: 1px solid var(--rule);
+      padding: 2px 7px;
+      border-radius: 2px;
+    }
 
-  .read-source {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 0.9rem;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.03em;
-    color: var(--signal);
-    text-decoration: none;
-    border-bottom: 1px solid var(--signal-dim);
-    padding-bottom: 1px;
-  }
-  .read-source:hover { border-bottom-color: var(--signal); }
+    .source-action-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-top: 0.35rem;
+    }
+    .read-source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--signal);
+      text-decoration: none;
+      border-bottom: 1px solid var(--signal-dim);
+      padding-bottom: 1px;
+    }
+    .read-source-link:hover {
+      border-bottom-color: var(--signal);
+    }
 
-  footer {
-    margin-top: 3.5rem;
-    padding-top: 1.5rem;
-    border-top: 3px solid var(--rule-strong);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--ink-faint);
-    text-align: center;
-    letter-spacing: 0.04em;
-  }
+    footer {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 3px solid var(--rule-strong);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
 
-  #loading, #empty {
-    text-align: center;
-    padding: 4rem 1rem;
-    color: var(--ink-soft);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-  }
+    #loading, #empty {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--ink-soft);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
 
-  @media (max-width: 480px) {
-    .masthead-top { font-size: 10px; }
-    .lead .body-text, .digest-item .body-text { font-size: 0.95rem; }
-  }
-</style>
+    /* ==========================================================================
+       BENTO CARDS MODE OVERRIDES
+       ========================================================================== */
+    body.bento-mode {
+      background: #f4f6f8;
+      color: #1e293b;
+      font-family: var(--font-sans);
+    }
+    body.bento-mode .wrap {
+      max-width: 860px;
+      padding-top: 1.5rem;
+    }
+    body.bento-mode .masthead-top {
+      color: #64748b;
+    }
+    body.bento-mode h1.title {
+      font-family: var(--font-sans);
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #0f172a;
+    }
+    body.bento-mode .tagline {
+      font-family: var(--font-mono);
+      color: #64748b;
+    }
+    body.bento-mode .rule-thick {
+      border-top-color: #e2e8f0;
+    }
+    body.bento-mode .tabs-bar {
+      border-bottom-color: #e2e8f0;
+      gap: 6px;
+      padding-bottom: 8px;
+    }
+    body.bento-mode .tab-btn {
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+      border-radius: 99px;
+      padding: 6px 14px;
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 0;
+    }
+    body.bento-mode .tab-btn.active {
+      background: #0f172a;
+      color: #ffffff;
+      border-color: #0f172a;
+    }
+    body.bento-mode .tab-btn.active .count {
+      color: #94a3b8;
+    }
+    body.bento-mode .section-label {
+      display: none;
+    }
+    body.bento-mode .article-item {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+      margin-bottom: 16px;
+      gap: 10px;
+    }
+    body.bento-mode .article-headline {
+      font-family: var(--font-sans);
+      font-size: 1.22rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    body.bento-mode .article-headline:hover {
+      color: #6366f1;
+    }
+    body.bento-mode .article-body {
+      font-family: var(--font-sans);
+      font-size: 0.93rem;
+      line-height: 1.65;
+      color: #334155;
+    }
+    body.bento-mode .go-deeper-box {
+      background: #f8fafc;
+      border-left-color: #6366f1;
+      color: #3730a3;
+      border-radius: 0 8px 8px 0;
+    }
+    body.bento-mode .editorial-tag {
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+      border-radius: 99px;
+      color: #475569;
+      font-weight: 600;
+    }
+    body.bento-mode .mode-toggle-btn {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      border-radius: 99px;
+      color: #0f172a;
+      font-weight: 600;
+    }
+    body.bento-mode footer {
+      border-top-color: #e2e8f0;
+      color: #94a3b8;
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
 
+<div class="wrap">
   <header class="masthead">
     <div class="masthead-top">
-      <span id="issue-date">—</span>
-      <span>The Signal</span>
-      <span id="issue-number">Live Feed</span>
+      <span id="issue-date">TUESDAY, AUGUST 25, 2026</span>
+      <span>THE SIGNAL</span>
+      <button class="mode-toggle-btn" id="mode-btn" onclick="toggleViewMode()">💻 Bento View</button>
     </div>
     <h1 class="title">The Signal</h1>
     <div class="tagline">Engineering, filtered. No noise, just what moved.</div>
   </header>
+  
   <hr class="rule-thick">
 
-  <nav class="tabs" id="tabs"></nav>
+  <nav class="tabs-bar" id="tabs-bar"></nav>
 
   <div id="loading">Loading today's issue…</div>
   <div id="empty" style="display:none;">Nothing cleared the signal threshold in this track today.</div>
@@ -317,160 +454,197 @@
   <main id="content"></main>
 
   <footer>
-    generated automatically · signal threshold ≥ 3 · <span id="article-count"></span> articles today
+    generated automatically · signal threshold ≥ 3 · <span id="article-count">0</span> signals
   </footer>
 </div>
 
 <script>
-const SUPABASE_URL = 'https://srfhubczkyqgryphkpfb.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_WNpgnNEFi329sp-lnqRPdg_huw4yojT';
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  /* SUPABASE CONFIGURATION */
+  const SUPABASE_URL = 'https://srfhubczkyqgryphkpfb.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_WNpgnNEFi329sp-lnqRPdg_huw4yojT';
+  const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const TRACKS = ["Engineering", "Finance", "AI", "Trends", "Opportunities"];
-let ALL_ARTICLES = [];
-let activeTrack = "All";
+  let ALL_ARTICLES = [];
+  let activeTrack = "All";
+  let isBentoMode = false;
+  let archivedSignals = JSON.parse(localStorage.getItem('the_signal_archived_ids') || '[]');
 
-function signalMeter(score) {
-  let bars = '';
-  for (let i = 1; i <= 5; i++) {
-    bars += `<span class="bar ${i <= score ? 'on' : ''}"></span>`;
-  }
-  return `<span class="signal-meter" aria-label="Signal strength ${score} of 5">${bars}</span>`;
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00');
-  return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-}
-
-function renderArticle(a, isLead) {
-  const tag = a.track === 'Opportunities'
-    ? `<div class="opportunity-tag">Opportunity signal</div>`
-    : '';
-
-  const tagsList = Array.isArray(a.tags)
-    ? a.tags
-    : (typeof a.tags === 'string' ? JSON.parse(a.tags || '[]') : []);
-
-  const bylineAndText = `
-      ${tag}
-      <div class="byline">
-        ${signalMeter(a.relevance || 3)}
-        <span class="dot">·</span>
-        <span>${a.source || ''}</span>
-        <span class="dot">·</span>
-        <span>${a.date || ''}</span>
-      </div>
-      <${isLead ? 'h2' : 'h3'}>${a.headline || ''}</${isLead ? 'h2' : 'h3'}>
-      <p class="body-text">${a.body || ''}</p>
-      ${a.deep_dive ? `<div class="go-deeper">Go deeper — ${a.deep_dive}</div>` : ''}
-      <div class="tags">${tagsList.map(t => `<span class="tag">${t}</span>`).join('')}</div>
-      ${a.url ? `<a class="read-source" href="${a.url}" target="_blank" rel="noopener">Read the source →</a>` : ''}
-  `;
-
-  if (isLead) {
-    const img = a.image_url
-      ? `<img class="lead-image" src="${a.image_url}" alt="" onerror="this.remove()">`
-      : '';
-    return `<article class="lead">${img}${bylineAndText}</article>`;
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
   }
 
-  const thumb = a.image_url
-    ? `<img class="digest-thumb" src="${a.image_url}" alt="" onerror="this.remove()">`
-    : '';
-  return `
-    <article class="digest-item">
-      <div class="digest-item-inner">
-        ${thumb}
-        <div class="digest-body">${bylineAndText}</div>
-      </div>
-    </article>
-  `;
-}
+  function formatDate(dateStr) {
+    if (!dateStr) return 'TUESDAY, AUGUST 25, 2026';
+    const d = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
+  }
 
-function renderTabs() {
-  const counts = { All: ALL_ARTICLES.length };
-  TRACKS.forEach(t => { counts[t] = ALL_ARTICLES.filter(a => a.track === t).length; });
+  function signalMeter(score) {
+    let bars = '';
+    for (let i = 1; i <= 5; i++) {
+      bars += `<span class="bar ${i <= score ? 'on' : ''}"></span>`;
+    }
+    return `<span class="signal-meter" aria-label="Signal strength ${score} of 5">${bars}</span>`;
+  }
 
-  const allTracks = ["All", ...TRACKS];
-  const html = allTracks.map(t => {
-    const count = counts[t] || 0;
-    return `<button class="tab ${t === activeTrack ? 'active' : ''}" data-track="${t}">
-      ${t}<span class="count">${count}</span>
-    </button>`;
-  }).join('');
+  function toggleViewMode() {
+    isBentoMode = !isBentoMode;
+    const btn = document.getElementById('mode-btn');
+    if (isBentoMode) {
+      document.body.classList.add('bento-mode');
+      btn.innerText = '📰 Reader View';
+    } else {
+      document.body.classList.remove('bento-mode');
+      btn.innerText = '💻 Bento View';
+    }
+  }
 
-  document.getElementById('tabs').innerHTML = html;
+  function toggleArchiveArticle(articleId) {
+    if (archivedSignals.includes(articleId)) {
+      archivedSignals = archivedSignals.filter(id => id !== articleId);
+    } else {
+      archivedSignals.push(articleId);
+    }
+    localStorage.setItem('the_signal_archived_ids', JSON.stringify(archivedSignals));
+    renderTabs();
+    renderContent();
+  }
 
-  document.querySelectorAll('.tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeTrack = btn.dataset.track;
-      renderTabs();
-      renderContent();
+  function renderTabs() {
+    const tabsContainer = document.getElementById('tabs-bar');
+    tabsContainer.innerHTML = '';
+
+    const discoveredTracks = new Set();
+    ALL_ARTICLES.forEach(a => {
+      if (a.track) {
+        a.track.split(',').forEach(t => {
+          const clean = t.trim();
+          if (clean) discoveredTracks.add(clean);
+        });
+      }
     });
-  });
-}
 
-function renderContent() {
-  const filtered = activeTrack === "All"
-    ? ALL_ARTICLES
-    : ALL_ARTICLES.filter(a => a.track === activeTrack);
+    const dynamicTracks = ["All", ...Array.from(discoveredTracks).sort(), "Archived"];
 
-  document.getElementById('article-count').textContent = filtered.length;
+    dynamicTracks.forEach(track => {
+      let count = 0;
+      if (track === 'Archived') {
+        count = archivedSignals.length;
+      } else if (track === 'All') {
+        count = ALL_ARTICLES.filter(a => !archivedSignals.includes(a.id)).length;
+      } else {
+        count = ALL_ARTICLES.filter(a => (a.track || '').toLowerCase().includes(track.toLowerCase()) && !archivedSignals.includes(a.id)).length;
+      }
 
-  if (filtered.length === 0) {
-    document.getElementById('content').innerHTML = '';
-    document.getElementById('empty').style.display = 'block';
-    return;
-  }
-  document.getElementById('empty').style.display = 'none';
-
-  const sorted = [...filtered].sort((a, b) => (b.relevance || 0) - (a.relevance || 0));
-  const [leadStory, ...rest] = sorted;
-
-  let html = '';
-  html += `<div class="section-label">Top signal</div>`;
-  html += renderArticle(leadStory, true);
-
-  if (rest.length > 0) {
-    html += `<div class="section-label">Also in this track</div>`;
-    rest.forEach(a => { html += renderArticle(a, false); });
+      const btn = document.createElement('button');
+      btn.className = `tab-btn ${activeTrack === track ? 'active' : ''}`;
+      btn.innerHTML = `${track}<span class="count">${count}</span>`;
+      btn.onclick = () => {
+        activeTrack = track;
+        renderTabs();
+        renderContent();
+      };
+      tabsContainer.appendChild(btn);
+    });
   }
 
-  document.getElementById('content').innerHTML = html;
-}
+  function renderContent() {
+    const container = document.getElementById('content');
+    container.innerHTML = '';
 
-async function loadIssue() {
-  try {
-    const { data, error } = await db
-      .from('articles')
-      .select('*')
-      .order('id', { ascending: false });
+    let filtered = [];
+    if (activeTrack === 'Archived') {
+      filtered = ALL_ARTICLES.filter(a => archivedSignals.includes(a.id));
+    } else if (activeTrack === 'All') {
+      filtered = ALL_ARTICLES.filter(a => !archivedSignals.includes(a.id));
+    } else {
+      filtered = ALL_ARTICLES.filter(a => (a.track || '').toLowerCase().includes(activeTrack.toLowerCase()) && !archivedSignals.includes(a.id));
+    }
 
-    if (error) throw error;
+    document.getElementById('article-count').textContent = filtered.length;
 
-    document.getElementById('loading').style.display = 'none';
-
-    if (!data || data.length === 0) {
+    if (filtered.length === 0) {
       document.getElementById('empty').style.display = 'block';
       return;
     }
+    document.getElementById('empty').style.display = 'none';
 
-    ALL_ARTICLES = data;
+    filtered.forEach(article => {
+      const isArchived = archivedSignals.includes(article.id);
+      const tagsList = Array.isArray(article.tags) ? article.tags : (typeof article.tags === 'string' ? JSON.parse(article.tags || '[]') : []);
+      const targetUrl = article.url || article.link || article.source_url || `https://www.google.com/search?q=${encodeURIComponent(article.headline + ' ' + (article.source || ''))}`;
 
-    const latestDate = data[0].date || new Date().toISOString().split('T')[0];
-    document.getElementById('issue-date').textContent = formatDate(latestDate);
+      const card = document.createElement('article');
+      card.className = 'article-item';
 
-    renderTabs();
-    renderContent();
-  } catch (err) {
-    document.getElementById('loading').textContent = 'Could not load articles. Check Supabase credentials & RLS policies.';
-    console.error(err);
+      card.innerHTML = `
+        <div class="editorial-meta">
+          ${signalMeter(article.relevance || 3)}
+          <span class="dot">·</span>
+          <span>${escapeHtml(article.source || 'Signal')}</span>
+          <span class="dot">·</span>
+          <span>${article.date || ''}</span>
+          <button class="mark-read-text-btn" onclick="toggleArchiveArticle(${article.id})">
+            ${isArchived ? '↩ Unarchive' : '✓ Mark Read'}
+          </button>
+        </div>
+
+        <a href="${targetUrl}" target="_blank" rel="noopener noreferrer" class="article-headline">
+          ${escapeHtml(article.headline)}
+        </a>
+
+        <div class="article-body-wrap">
+          <p class="article-body">${escapeHtml(article.body)}</p>
+        </div>
+
+        ${article.deep_dive ? `<div class="go-deeper-box"><strong>Deep Dive:</strong> ${escapeHtml(article.deep_dive)}</div>` : ''}
+
+        ${tagsList.length > 0 ? `
+          <div class="tags-row">
+            ${tagsList.map(t => `<span class="editorial-tag">#${escapeHtml(t)}</span>`).join('')}
+          </div>
+        ` : ''}
+
+        <div class="source-action-row">
+          <a class="read-source-link" href="${targetUrl}" target="_blank" rel="noopener noreferrer">Read the source →</a>
+        </div>
+      `;
+      container.appendChild(card);
+    });
   }
-}
 
-loadIssue();
+  async function loadIssue() {
+    try {
+      const { data, error } = await db
+        .from('articles')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) throw error;
+
+      document.getElementById('loading').style.display = 'none';
+      ALL_ARTICLES = data || [];
+
+      if (ALL_ARTICLES.length > 0) {
+        const latestDate = ALL_ARTICLES[0].date || new Date().toISOString().split('T')[0];
+        document.getElementById('issue-date').textContent = formatDate(latestDate);
+      }
+
+      renderTabs();
+      renderContent();
+    } catch (err) {
+      document.getElementById('loading').textContent = 'Could not load articles. Check Supabase connection.';
+      console.error(err);
+    }
+  }
+
+  loadIssue();
 </script>
 </body>
 </html>
