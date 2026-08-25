@@ -11,9 +11,6 @@
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* ==========================================================================
-       EDITORIAL NEWSPAPER THEME (DEFAULT)
-       ========================================================================== */
     :root {
       --paper: #E8E5D9;
       --paper-raised: #F1EEE3;
@@ -47,14 +44,14 @@
     }
 
     .wrap {
-      max-width: 780px;
+      max-width: 760px;
       margin: 0 auto;
       padding: 0 1.25rem;
     }
 
     /* Masthead */
     .masthead {
-      padding: 2.25rem 0 1rem;
+      padding: 1.75rem 0 1rem;
     }
 
     .masthead-top {
@@ -62,11 +59,21 @@
       justify-content: space-between;
       align-items: center;
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 10px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--ink-faint);
       margin-bottom: 1.25rem;
+      gap: 8px;
+    }
+
+    .masthead-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     .mode-toggle-btn {
@@ -76,10 +83,11 @@
       font-size: 10px;
       letter-spacing: 0.06em;
       text-transform: uppercase;
-      padding: 3px 10px;
+      padding: 4px 10px;
       border-radius: 2px;
       color: var(--ink);
       cursor: pointer;
+      flex-shrink: 0;
       transition: all 0.15s ease;
     }
     .mode-toggle-btn:hover {
@@ -90,7 +98,7 @@
 
     h1.title {
       font-family: var(--font-serif-head);
-      font-size: clamp(2.8rem, 8vw, 4.4rem);
+      font-size: clamp(2.8rem, 8vw, 4.2rem);
       font-weight: 600;
       letter-spacing: -0.02em;
       text-align: center;
@@ -102,7 +110,7 @@
       text-align: center;
       font-family: var(--font-mono);
       font-size: 11px;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
       color: var(--ink-soft);
       margin-top: 0.75rem;
@@ -183,10 +191,16 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 0.5rem;
+      flex-wrap: nowrap;
+      margin-bottom: 0.4rem;
     }
-    .editorial-meta .dot { color: var(--rule); }
+    .editorial-meta .source-text {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 180px;
+    }
+    .editorial-meta .dot { color: var(--rule); flex-shrink: 0; }
 
     .mark-read-text-btn {
       background: none;
@@ -201,26 +215,10 @@
       margin-left: auto;
       text-decoration: underline;
       text-underline-offset: 2px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .mark-read-text-btn:hover { color: var(--ink); }
-
-    /* Section divider line */
-    .section-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--ink-faint);
-      margin: 0 0 1rem;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .section-label::after {
-      content: '';
-      flex: 1;
-      border-top: 1px solid var(--rule);
-    }
 
     /* Editorial Article Item */
     .article-item {
@@ -237,7 +235,7 @@
 
     .article-headline {
       font-family: var(--font-serif-head);
-      font-size: clamp(1.4rem, 4.5vw, 1.85rem);
+      font-size: clamp(1.35rem, 4.5vw, 1.8rem);
       font-weight: 600;
       line-height: 1.15;
       letter-spacing: -0.015em;
@@ -248,6 +246,7 @@
       color: var(--signal);
     }
 
+    /* Clamped Summary with Read More */
     .article-body-wrap {
       position: relative;
     }
@@ -255,7 +254,31 @@
       font-size: 1.02rem;
       line-height: 1.7;
       color: var(--ink);
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      transition: all 0.25s ease;
     }
+    .article-item.expanded .article-body {
+      display: block;
+      -webkit-line-clamp: unset;
+    }
+
+    .read-more-btn {
+      background: none;
+      border: none;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.03em;
+      color: var(--signal);
+      cursor: pointer;
+      padding: 4px 0 0;
+      display: inline-block;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .read-more-btn:hover { color: var(--ink); }
 
     .go-deeper-box {
       margin-top: 0.4rem;
@@ -336,7 +359,7 @@
       font-family: var(--font-sans);
     }
     body.bento-mode .wrap {
-      max-width: 860px;
+      max-width: 840px;
       padding-top: 1.5rem;
     }
     body.bento-mode .masthead-top {
@@ -377,9 +400,6 @@
     }
     body.bento-mode .tab-btn.active .count {
       color: #94a3b8;
-    }
-    body.bento-mode .section-label {
-      display: none;
     }
     body.bento-mode .article-item {
       background: #ffffff;
@@ -436,8 +456,11 @@
 <div class="wrap">
   <header class="masthead">
     <div class="masthead-top">
-      <span id="issue-date">TUESDAY, AUGUST 25, 2026</span>
-      <span>THE SIGNAL</span>
+      <div class="masthead-meta-left">
+        <span id="issue-date">TUESDAY, AUGUST 25, 2026</span>
+        <span>·</span>
+        <span>THE SIGNAL</span>
+      </div>
       <button class="mode-toggle-btn" id="mode-btn" onclick="toggleViewMode()">💻 Bento View</button>
     </div>
     <h1 class="title">The Signal</h1>
@@ -482,7 +505,7 @@
   function formatDate(dateStr) {
     if (!dateStr) return 'TUESDAY, AUGUST 25, 2026';
     const d = new Date(dateStr.includes('T') ? dateStr : dateStr + 'T00:00:00');
-    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase();
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
   }
 
   function signalMeter(score) {
@@ -554,6 +577,14 @@
     });
   }
 
+  function toggleExpandBody(articleId, btn) {
+    const articleElem = document.getElementById(`article-item-${articleId}`);
+    if (articleElem) {
+      const isExpanded = articleElem.classList.toggle('expanded');
+      btn.innerText = isExpanded ? 'Show less ↑' : 'Read full summary ↓';
+    }
+  }
+
   function renderContent() {
     const container = document.getElementById('content');
     container.innerHTML = '';
@@ -578,16 +609,18 @@
     filtered.forEach(article => {
       const isArchived = archivedSignals.includes(article.id);
       const tagsList = Array.isArray(article.tags) ? article.tags : (typeof article.tags === 'string' ? JSON.parse(article.tags || '[]') : []);
+      const isLong = (article.body || '').length > 220;
       const targetUrl = article.url || article.link || article.source_url || `https://www.google.com/search?q=${encodeURIComponent(article.headline + ' ' + (article.source || ''))}`;
 
       const card = document.createElement('article');
       card.className = 'article-item';
+      card.id = `article-item-${article.id}`;
 
       card.innerHTML = `
         <div class="editorial-meta">
           ${signalMeter(article.relevance || 3)}
           <span class="dot">·</span>
-          <span>${escapeHtml(article.source || 'Signal')}</span>
+          <span class="source-text">${escapeHtml(article.source || 'Signal')}</span>
           <span class="dot">·</span>
           <span>${article.date || ''}</span>
           <button class="mark-read-text-btn" onclick="toggleArchiveArticle(${article.id})">
@@ -601,6 +634,7 @@
 
         <div class="article-body-wrap">
           <p class="article-body">${escapeHtml(article.body)}</p>
+          ${isLong ? `<button class="read-more-btn" onclick="toggleExpandBody(${article.id}, this)">Read full summary ↓</button>` : ''}
         </div>
 
         ${article.deep_dive ? `<div class="go-deeper-box"><strong>Deep Dive:</strong> ${escapeHtml(article.deep_dive)}</div>` : ''}
@@ -612,7 +646,7 @@
         ` : ''}
 
         <div class="source-action-row">
-          <a class="read-source-link" href="${targetUrl}" target="_blank" rel="noopener noreferrer">Read the source →</a>
+          <a class="read-source-link" href="${targetUrl}" target="_blank" rel="noopener noreferrer">Read original source →</a>
         </div>
       `;
       container.appendChild(card);
